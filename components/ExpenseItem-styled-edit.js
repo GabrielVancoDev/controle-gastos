@@ -38,8 +38,26 @@ export default HomeScreen() {
             return;
         }
         if(editandoId){
-            // Atualiza um gasto existente
+
+            const gastosAtualizados = gastos.map(item => {
+              // Atualiza um gasto existente
+            item.id === editandoId ? {...item, descricao, valor: parseFloat(valor).toFixed(2)}:item     
+            });
+
+            setGastos(gastosAtualizados); // Atualiza a lista de gastos
+            setEditandoId(null); // Limpa o ID do gasto sendo editado
+        } else {
+            // Criação de um novo gasto
+            const novoGasto = {
+                id: Date.now().toString(), // Gera um ID único 
+                descricao, // Descrição do Gasto
+                valor: parseFloat(valor).toFixed(2) // Formata o Valor
+
+            };
+            setGastos([...gastos, novoGasto]); // Adiciona à lista
+
             
+
         }
     }
 
