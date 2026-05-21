@@ -75,4 +75,13 @@ export default HomeScreen() {
 
         }
     };
+
+    // Função para preencher o formulário com os dados do item que será editado
+    const editarGasto = (id) => {
+        setDescricao(item.descricao);   // Preenche a Descrição
+        setValor(item.valor);           // Preenche o Valor
+        setEditandoId(item.id);         // Armazena o ID
+    };
+
+    // Cálculo do valor de gastos
 }
