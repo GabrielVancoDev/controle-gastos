@@ -56,9 +56,23 @@ export default HomeScreen() {
             };
             setGastos([...gastos, novoGasto]); // Adiciona à lista
 
-            
+        }
+
+        // Limpa os campos de formulário
+        setDescricao('');
+        setValor('');
+    };
+
+
+    const removerGasto = (id) => {
+        setGastos(gastos.filter(item => item.id !== id)); // Remove o item pelo ID
+
+        // Verifica se o item a ser removido está sebdi editado. Se estiver, cancela a operação
+        if(editandoId === id){
+            setEditandoId(null); // Sai do modo de edição
+            setDescricao('');
+            setValor('');
 
         }
-    }
-
+    };
 }
