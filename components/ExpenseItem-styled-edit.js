@@ -31,6 +31,16 @@ export default HomeScreen() {
             Alert.alert('Erro', 'Preencha todos os campos!');
             return;
         }
+
+        // Validação para verificar valor númerico no campo valor
+        if(isNaN(parseFloat(valor))) {
+            Alert.alert('Erro', 'Digite um valor numérico!');
+            return;
+        }
+        if(editandoId){
+            // Atualiza um gasto existente
+            
+        }
     }
 
 }
