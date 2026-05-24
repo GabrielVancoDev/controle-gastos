@@ -1,87 +1,274 @@
-// Importa o React e o Hook useState para o controle de Estado
-
+// Importa o React e o Hook useState para controle de estado
 import React, { useState } from "react";
 
-//  Importa os componentes naticos para construção de Interface
-
+// Importa os componentes nativos para construção da interface
 import {
-  View,                     // Container de Layout
-  TextIpunt,                // Campo de Entrada de texto
-  Text,                     // Exibção de Texto
-  TouchableOpacity,
-  FlatList,
-  StyleSheet,
-  Alert,
+  View, // Container de layout
+  TextInput, // Campo de entrada de texto
+  Text, // Exibição de texto
+  TouchableOpacity, // Botão clicável
+  FlatList, // Lista de itens
+  StyleSheet, // Estilização
+  Alert, // Alertas do sistema
 } from "react-native";
 
-// Componente Principal 
+// ==============================
+// Componente principal
+// ==============================
 
-export default HomeScreen() {
-    // Estado para os campos de Formulário
-    const [descricao, setDescricao] = userState('');    // Descrição do Gasto
-    const [valor, setValor] = userState('');            // Valor do Gasto
-    const [ gastos, setGastos] = userState([]);         // Lista de Gastos
-    const [editandoId, setEditandoId] = useState(null); // ID do Gasto sendo editado
+export default function HomeScreen() {
+  // ==============================
+  // Estados do formulário
+  // ==============================
 
-    // Função para adicionar um novo gasto ou atualizar um existente
+  const [descricao, setDescricao] = useState(""); // Descrição do gasto
+  const [valor, setValor] = useState(""); // Valor do gasto
+  const [gastos, setGastos] = useState([]); // Lista de gastos
+  const [editandoId, setEditandoId] = useState(null); // ID do gasto em edição
 
-    const adicionarOuAtualizarGasto = () => {
-        // Validação campos não podem estar vazios
-        if(!descricao || !valor) {
-            Alert.alert('Erro', 'Preencha todos os campos!');
-            return;
-        }
+  // ==============================
+  // Adicionar ou atualizar gasto
+  // ==============================
 
-        // Validação para verificar valor númerico no campo valor
-        if(isNaN(parseFloat(valor))) {
-            Alert.alert('Erro', 'Digite um valor numérico!');
-            return;
-        }
-        if(editandoId){
+  const adicionarOuAtualizarGasto = () => {
+    // Validação: campos vazios
+    if (!descricao || !valor) {
+      Alert.alert("Erro", "Preencha todos os campos!");
+      return;
+    }
 
-            const gastosAtualizados = gastos.map(item => {
-              // Atualiza um gasto existente
-            item.id === editandoId ? {...item, descricao, valor: parseFloat(valor).toFixed(2)}:item     
-            });
+    // Validação: valor precisa ser numérico
+    if (isNaN(parseFloat(valor))) {
+      Alert.alert("Erro", "Digite um valor numérico!");
+      return;
+    }
 
-            setGastos(gastosAtualizados); // Atualiza a lista de gastos
-            setEditandoId(null); // Limpa o ID do gasto sendo editado
-        } else {
-            // Criação de um novo gasto
-            const novoGasto = {
-                id: Date.now().toString(), // Gera um ID único 
-                descricao, // Descrição do Gasto
-                valor: parseFloat(valor).toFixed(2) // Formata o Valor
+    // ==============================
+    // Atualização de gasto existente
+    // ==============================
 
-            };
-            setGastos([...gastos, novoGasto]); // Adiciona à lista
+    if (editandoId !== null) {
+      const gastosAtualizados = gastos.map((item) =>
+        item.id === editandoId
+          ? {
+              ...item,
+              descricao,
+              valor: parseFloat(valor).toFixed(2),
+            }
+          : item,
+      );
 
-        }
+      setGastos(gastosAtualizados); // Atualiza lista
+      setEditandoId(null); // Sai do modo edição
+    } else {
+      // ==============================
+      // Criação de novo gasto
+      // ==============================
 
-        // Limpa os campos de formulário
-        setDescricao('');
-        setValor('');
-    };
+      const novoGasto = {
+        id: Date.now().toString(), // Gera ID único
+        descricao,
+        valor: parseFloat(valor).toFixed(2),
+      };
 
+      setGastos([...gastos, novoGasto]); // Adiciona novo gasto
+    }
 
-    const removerGasto = (id) => {
-        setGastos(gastos.filter(item => item.id !== id)); // Remove o item pelo ID
+    // Limpa formulário
+    setDescricao("");
+    setValor("");
+  };
 
-        // Verifica se o item a ser removido está sebdi editado. Se estiver, cancela a operação
-        if(editandoId === id){
-            setEditandoId(null); // Sai do modo de edição
-            setDescricao('');
-            setValor('');
+  // ==============================
+  // Remover gasto
+  // ==============================
 
-        }
-    };
+  const removerGasto = (id) => {
+    // Remove item pelo ID
+    setGastos(gastos.filter((item) => item.id !== id));
 
-    // Função para preencher o formulário com os dados do item que será editado
-    const editarGasto = (id) => {
-        setDescricao(item.descricao);   // Preenche a Descrição
-        setValor(item.valor);           // Preenche o Valor
-        setEditandoId(item.id);         // Armazena o ID
-    };
+    // Caso esteja editando o item removido
+    if (editandoId === id) {
+      setEditandoId(null);
+      setDescricao("");
+      setValor("");
+    }
+  };
 
-    // Cálculo do valor de gastos
+  // ==============================
+  // Editar gasto
+  // ==============================
+
+  const editarGasto = (item) => {
+    // Preenche formulário
+    setDescricao(item.descricao);
+    setValor(item.valor);
+
+    // Salva ID do item em edição
+    setEditandoId(item.id);
+  };
+
+  // ==============================
+  // Cálculo total dos gastos
+  // ==============================
+
+  const totalGastos = gastos
+    .reduce((acc, item) => acc + parseFloat(item.valor), 0)
+    .toFixed(2);
+
+  // ==============================
+  // Interface visual
+  // ==============================
+
+  return (
+    <View style={styles.container}>
+      {/* Título */}
+      <Text style={styles.title}>Controle de Gastos</Text>
+
+      {/* Campo descrição */}
+      <TextInput
+        style={styles.input}
+        placeholder="Descrição do Gasto"
+        value={descricao}
+        onChangeText={setDescricao}
+      />
+
+      {/* Campo valor */}
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        placeholder="Valor"
+        value={valor}
+        onChangeText={setValor}
+      />
+
+      {/* Botão adicionar/atualizar */}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={adicionarOuAtualizarGasto}
+      >
+        <Text style={styles.buttonText}>
+          {editandoId !== null ? "Atualizar Gasto" : "Adicionar Gasto"}
+        </Text>
+      </TouchableOpacity>
+
+      {/* Exibição total */}
+      <Text style={styles.total}>Total: R$ {totalGastos}</Text>
+
+      {/* Lista de gastos */}
+      <FlatList
+        data={gastos}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.itemContainer}>
+            {/* Texto do item */}
+            <Text style={styles.item}>
+              {item.descricao} - R$ {item.valor}
+            </Text>
+
+            {/* Ações */}
+            <View style={styles.actions}>
+              {/* Botão editar */}
+              <TouchableOpacity
+                onPress={() => editarGasto(item)}
+                style={styles.editButton}
+              >
+                <Text style={styles.actionText}>Editar</Text>
+              </TouchableOpacity>
+
+              {/* Botão remover */}
+              <TouchableOpacity
+                onPress={() => removerGasto(item.id)}
+                style={styles.removeButton}
+              >
+                <Text style={styles.actionText}>Excluir</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      />
+    </View>
+  );
 }
+
+// ==============================
+// Estilos da aplicação
+// ==============================
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    marginTop: 50,
+    backgroundColor: "#fff",
+  },
+
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+
+  button: {
+    backgroundColor: "#007bff",
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 15,
+  },
+
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+
+  total: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 15,
+  },
+
+  itemContainer: {
+    backgroundColor: "#f5f5f5",
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+
+  item: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+
+  actions: {
+    flexDirection: "row",
+  },
+
+  editButton: {
+    backgroundColor: "#28a745",
+    padding: 10,
+    borderRadius: 6,
+    marginRight: 10,
+  },
+
+  removeButton: {
+    backgroundColor: "#dc3545",
+    padding: 10,
+    borderRadius: 6,
+  },
+
+  actionText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+});
